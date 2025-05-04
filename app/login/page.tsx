@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LoginPage() {
+  const [loading, setLoading] = useState(false); // Loading state
+
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
@@ -17,16 +19,24 @@ export default function LoginPage() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setError('');
-
+    setLoading(true);
     const res = await login(form);
     if (res.token) {
       localStorage.setItem('token', res.token);
       router.push('/dashboard');
+      setLoading(false);
     } else {
       setError(res.message || 'Login failed');
+      setLoading(false);
     }
   };
-
+  if (loading) {
+    return (
+      <div className="fixed inset-0 flex justify-center items-center bg-gray-50 bg-opacity-80 backdrop-blur-sm z-50">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
   return (
     <div className="max-w-md mx-auto p-4">
       <h2 className="text-xl font-bold mb-4">Login</h2>

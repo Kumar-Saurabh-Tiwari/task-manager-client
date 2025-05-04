@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import Link from "next/link";
-import { useAuth } from "@/hooks/useAuth"; // Import the useAuth hook
 import { useRouter } from "next/navigation";
 import './globals.css';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { isAuthenticated, isLoading } = useAuth(); // Get authentication state
+  const { isAuthenticated } = useAuth(); // Get authentication state
   const router = useRouter();
 
   // Toggle sidebar visibility
@@ -21,11 +21,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     setIsSidebarOpen(false);
   };
 
-  // Redirect to login if not authenticated and trying to access protected routes
-  if (!isLoading && !isAuthenticated) {
-    router.replace("/login");
-    return null; // Prevent rendering until redirection is complete
-  }
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Remove token from localStorage
+    router.replace("/login"); // Redirect to login page
+  };
 
   return (
     <html lang="en">
@@ -42,7 +42,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 alt="Back"
                 className="w-6 h-6 mr-2" // Adjusted size and spacing
               />
-             
             </button>
             <Link href="/" className="text-2xl font-bold text-blue-600 hover:text-blue-800 transition-all duration-300">
               TaskManager
@@ -51,21 +50,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           {/* Desktop Navigation */}
           <div className="space-x-6 hidden md:flex">
+            <Link href="/dashboard" className="text-gray-600 hover:text-blue-600 font-semibold transition-all duration-300">
+              Dashboard
+            </Link>
             {isAuthenticated ? (
-              <>
-                <Link href="/dashboard" className="text-gray-600 hover:text-blue-600 font-semibold transition-all duration-300">
-                  Dashboard
-                </Link>
-                <button
-                  onClick={() => {
-                    localStorage.removeItem("token"); // Clear token on logout
-                    router.replace("/login"); // Redirect to login
-                  }}
-                  className="text-gray-600 hover:text-blue-600 font-semibold transition-all duration-300"
-                >
-                  Logout
-                </button>
-              </>
+              <button
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-blue-600 font-semibold transition-all duration-300"
+              >
+                Logout
+              </button>
             ) : (
               <>
                 <Link href="/login" className="text-gray-600 hover:text-blue-600 font-semibold transition-all duration-300">
@@ -97,21 +91,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="fixed top-0 left-0 w-64 bg-white h-full shadow-lg z-60 p-6">
               <button onClick={closeSidebar} className="text-gray-600 text-xl mb-4">X</button>
               <div className="space-y-4">
+                <Link href="/dashboard" className="block text-gray-600 hover:text-blue-600 py-2" onClick={closeSidebar}>
+                  Dashboard
+                </Link>
                 {isAuthenticated ? (
-                  <>
-                    <Link href="/dashboard" className="block text-gray-600 hover:text-blue-600 py-2" onClick={closeSidebar}>
-                      Dashboard
-                    </Link>
-                    <button
-                      onClick={() => {
-                        localStorage.removeItem("token"); // Clear token on logout
-                        router.replace("/login"); // Redirect to login
-                      }}
-                      className="block text-gray-600 hover:text-blue-600 py-2"
-                    >
-                      Logout
-                    </button>
-                  </>
+                  <button
+                    onClick={handleLogout}
+                    className="block text-gray-600 hover:text-blue-600 py-2"
+                  >
+                    Logout
+                  </button>
                 ) : (
                   <>
                     <Link href="/login" className="block text-gray-600 hover:text-blue-600 py-2" onClick={closeSidebar}>

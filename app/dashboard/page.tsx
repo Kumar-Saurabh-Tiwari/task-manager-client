@@ -21,33 +21,40 @@ type Task = {
 };
 
 export default function DashboardPage() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated} = useAuth();
+  const [loading, setLoading] = useState(true); // Loading state
+
   const [tasks, setTasks] = useState<Task[]>([]); // Ensure tasks is initialized as an empty array
   const currentUserId = "681751441feda357ed8eb4d0"; // Replace with real user ID
 
   useEffect(() => {
     console.log("isAuthenticated:", isAuthenticated);
-    if (isLoading) return; // Wait for authentication check to complete
     if (!isAuthenticated) return;
 
     async function fetchTasks() {
-      console.log("Fetching tasks...");
+      setLoading(true);
       try {
         const data = await getTasks();
         setTasks(Array.isArray(data) ? data : []); // Ensure data is an array
       } catch (error) {
         console.error("Error fetching tasks:", error);
         setTasks([]); // Fallback to an empty array on error
+      } finally {
+        setLoading(false); // Hide spinner
       }
     }
     fetchTasks();
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated]);
 
   const tasksAssigned = tasks.filter((t) => t.createdBy._id === currentUserId);
   const overdueTasks = tasks.filter((t) => isBefore(new Date(t.dueDate), new Date()));
 
-  if (isLoading) {
-    return <p>Loading...</p>; // Show a loading indicator while checking authentication
+  if (loading) {
+    return (
+      <div className="fixed inset-0 flex justify-center items-center bg-gray-50 bg-opacity-80 backdrop-blur-sm z-50">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
   return (
