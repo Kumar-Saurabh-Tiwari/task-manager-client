@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
-        .register("/service-worker.js")
+        .register("/firebase-messaging-sw.js")
         .then((registration) => {
           console.log("Service Worker registered with scope:", registration.scope);
         })
@@ -45,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         });
     }
   }, []);
+  
 
   return (
     <html lang="en">
