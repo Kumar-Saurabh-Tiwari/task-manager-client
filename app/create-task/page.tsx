@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createTask } from "../../services/taskService";
+import { scheduleNotification } from "../../services/notificationService";
 import { toast } from "react-hot-toast";
-
 export default function CreateTaskPage() {
   const router = useRouter();
   const [task, setTask] = useState({
@@ -42,7 +42,9 @@ export default function CreateTaskPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
+    let fcmToken
+    fcmToken = sessionStorage.getItem("fcmToken"); // Retrieve the token from session storage
+    
     if (!validateForm()) {
       toast.error(error); // Show error message in toaster
       return;
@@ -52,6 +54,21 @@ export default function CreateTaskPage() {
       const res = await createTask(task);
       if (res && res._id) { // Check if the response contains the created task's ID
         toast.success("Task created successfully!"); // Show success message
+        console.log("Task created:", fcmToken); // Log the created task
+        // Schedule a notification
+        const notificationRes = await scheduleNotification({
+          title: task.title,
+          body: task.description || "You have a task due soon!",
+          token: fcmToken, // Replace with the actual token if required
+          scheduledTime: task.dueDate, // Use the due date as the scheduled time
+        });
+
+        if (notificationRes.success) {
+          toast.success("Notification scheduled successfully!");
+        } else {
+          toast.error("Failed to schedule notification.");
+        }
+
         router.push("/dashboard"); // Redirect to the dashboard after successful creation
       } else {
         setError("Failed to create the task. Please try again.");
@@ -96,10 +113,10 @@ export default function CreateTaskPage() {
         </div>
         <div>
           <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700">
-            Due Date
+            Due Date & Time
           </label>
           <input
-            type="date"
+            type="datetime-local" // Changed to datetime-local
             id="dueDate"
             name="dueDate"
             className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
