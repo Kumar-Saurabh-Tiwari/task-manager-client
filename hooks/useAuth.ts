@@ -8,6 +8,11 @@ export const useAuth = () => {
   const router = useRouter();
 
   useEffect(() => {
+    // Ensure this code only runs on the client
+    if (typeof window === "undefined") {
+      return;
+    }
+
     const token = localStorage.getItem("token");
 
     console.log("Token:", token);
