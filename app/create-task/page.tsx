@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createTask } from "../../services/taskService";
+import { toast } from "react-hot-toast";
 
 export default function CreateTaskPage() {
   const router = useRouter();
@@ -43,20 +44,23 @@ export default function CreateTaskPage() {
     setError("");
 
     if (!validateForm()) {
+      toast.error(error); // Show error message in toaster
       return;
     }
 
     try {
       const res = await createTask(task);
       if (res && res._id) { // Check if the response contains the created task's ID
-        alert("Task created successfully!");
+        toast.success("Task created successfully!"); // Show success message
         router.push("/dashboard"); // Redirect to the dashboard after successful creation
       } else {
         setError("Failed to create the task. Please try again.");
+        toast.error("Failed to create the task. Please try again."); // Show error message
       }
     } catch (err) {
       console.error("Error creating task:", err);
       setError("An error occurred while creating the task.");
+      toast.error("An error occurred while creating the task."); // Show error message
     }
   };
 

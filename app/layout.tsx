@@ -5,11 +5,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import './globals.css';
 import { useAuth } from '@/hooks/useAuth';
+import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { isAuthenticated } = useAuth(); // Get authentication state
   const router = useRouter();
+
+  useEffect(() => {
+
+  }, [isAuthenticated]);
 
   // Toggle sidebar visibility
   const toggleSidebar = () => {
@@ -30,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="bg-gray-50 text-gray-900">
+      <Toaster position="top-right" reverseOrder={false} /> {/* Add Toaster here */}
         <nav className="bg-white border-b px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             {/* Back Button */}

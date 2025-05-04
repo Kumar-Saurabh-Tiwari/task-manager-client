@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { register } from '../../services/authService';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from 'react-hot-toast';
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -17,14 +18,17 @@ export default function RegisterPage() {
   const validateForm = () => {
     if (!form.name.trim()) {
       setError('Name is required.');
+      toast.error('Name is required.'); // Show error message in toaster
       return false;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       setError('Please enter a valid email address.');
+      toast.error('Please enter a valid email address.'); // Show error message in toaster
       return false;
     }
     if (form.password.length < 6) {
       setError('Password must be at least 6 characters long.');
+      toast.error('Password must be at least 6 characters long.'); // Show error message in toaster
       return false;
     }
     return true;
@@ -38,12 +42,19 @@ export default function RegisterPage() {
       return;
     }
 
-    const res = await register(form);
-    if (res.token) {
-      // localStorage.setItem('token', res.token);
-      router.push('/login');
-    } else {
-      setError(res.message || 'Registration failed');
+    try {
+      const res = await register(form);
+      if (res.token) {
+        toast.success('Registration successful! Redirecting to login...'); // Show success message
+        router.push('/login');
+      } else {
+        setError(res.message || 'Registration failed');
+        toast.error(res.message || 'Registration failed'); // Show error message in toaster
+      }
+    } catch (err) {
+      console.error(err);
+      setError('An error occurred. Please try again later.');
+      toast.error('An error occurred. Please try again later.'); // Show error message in toaster
     }
   };
 

@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { login } from '../../services/authService';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from "react-hot-toast";
+import { useEffect} from "react";
+
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false); // Loading state
@@ -19,14 +22,21 @@ export default function LoginPage() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
-    const res = await login(form);
-    if (res.token) {
-      localStorage.setItem('token', res.token);
-      router.push('/dashboard');
-      setLoading(false);
-    } else {
-      setError(res.message || 'Login failed');
+    try {
+      setLoading(true);
+      const res = await login(form);
+      if (res.token) {
+        toast.success("Login successful!"); 
+        localStorage.setItem('token', res.token);
+        router.push('/dashboard');
+        setLoading(false);
+      } else {
+        setError(res.message || 'Login failed');
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setError('An error occurred. Please try again later.');
       setLoading(false);
     }
   };
