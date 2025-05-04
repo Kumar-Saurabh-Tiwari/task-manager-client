@@ -1,0 +1,133 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { format, isBefore } from "date-fns";
+import { getTasks } from "../../services/taskService";
+import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
+
+type Task = {
+  _id: string; // Updated to match the backend response
+  title: string;
+  description?: string;
+  dueDate: string;
+  priority: "low" | "medium" | "high";
+  status: "todo" | "in-progress" | "done";
+  createdBy: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+};
+
+export default function DashboardPage() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const [tasks, setTasks] = useState<Task[]>([]); // Ensure tasks is initialized as an empty array
+  const currentUserId = "681751441feda357ed8eb4d0"; // Replace with real user ID
+
+  useEffect(() => {
+    console.log("isAuthenticated:", isAuthenticated);
+    if (isLoading) return; // Wait for authentication check to complete
+    if (!isAuthenticated) return;
+
+    async function fetchTasks() {
+      console.log("Fetching tasks...");
+      try {
+        const data = await getTasks();
+        setTasks(Array.isArray(data) ? data : []); // Ensure data is an array
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        setTasks([]); // Fallback to an empty array on error
+      }
+    }
+    fetchTasks();
+  }, [isAuthenticated, isLoading]);
+
+  const tasksAssigned = tasks.filter((t) => t.createdBy._id === currentUserId);
+  const overdueTasks = tasks.filter((t) => isBefore(new Date(t.dueDate), new Date()));
+
+  if (isLoading) {
+    return <p>Loading...</p>; // Show a loading indicator while checking authentication
+  }
+
+  return (
+    <div className="space-y-10">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <Link
+          href="/create-task"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          + Add Task
+        </Link>
+      </div>
+      <Section title="📝 Tasks You Created" tasks={tasksAssigned} />
+      <Section title="⏰ Overdue Tasks" tasks={overdueTasks} highlight="red" />
+    </div>
+  );
+}
+
+function Section({ title, tasks, highlight }: { title: string; tasks: Task[]; highlight?: string }) {
+  return (
+    <div>
+      <h2 className={`text-xl font-semibold mb-4 ${highlight === "red" ? "text-red-600" : ""}`}>
+        {title}
+      </h2>
+
+      {tasks.length === 0 ? (
+        <p className="text-gray-500 italic">No tasks found.</p>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {tasks.map((task) => (
+            <div
+              key={task._id} // Updated to use _id
+              className="p-5 bg-white rounded-xl shadow-sm border hover:shadow-md transition"
+            >
+              <h3 className="font-semibold text-lg mb-1">{task.title}</h3>
+              <p className="text-sm text-gray-600 mb-2">
+                Due: {format(new Date(task.dueDate), "dd MMM yyyy")}
+              </p>
+              <p className="text-sm text-gray-600 mb-2">
+                Created By: {task.createdBy.name} ({task.createdBy.email})
+              </p>
+              <div className="flex gap-2 text-sm">
+                <Badge color={getPriorityColor(task.priority)}>{task.priority}</Badge>
+                <Badge color={getStatusColor(task.status)}>{task.status}</Badge>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Badge({ children, color }: { children: React.ReactNode; color: string }) {
+  return (
+    <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${color}`}>
+      {children}
+    </span>
+  );
+}
+
+function getPriorityColor(priority: Task["priority"]) {
+  switch (priority) {
+    case "high":
+      return "bg-red-100 text-red-700";
+    case "medium":
+      return "bg-yellow-100 text-yellow-700";
+    default:
+      return "bg-green-100 text-green-700";
+  }
+}
+
+function getStatusColor(status: Task["status"]) {
+  switch (status) {
+    case "done":
+      return "bg-green-100 text-green-700";
+    case "in-progress":
+      return "bg-blue-100 text-blue-700";
+    default:
+      return "bg-gray-100 text-gray-700";
+  }
+}
