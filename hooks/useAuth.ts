@@ -12,10 +12,7 @@ export const useAuth = () => {
     if (typeof window === "undefined") {
       return;
     }
-
     const token = localStorage.getItem("token");
-
-    console.log("Token:", token);
     if (!token) {
       setIsAuthenticated(false);
       setIsLoading(false);

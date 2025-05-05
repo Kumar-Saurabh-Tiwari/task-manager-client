@@ -19,6 +19,7 @@ messaging.onBackgroundMessage(function (payload) {
 
   self.registration.showNotification(title, {
     body,
-    icon: "/icon-192x192.png", // Replace with your icon if available
+    icon: "/icon-192x192.png", // Ensure this path is correct
+    badge: "/icon-192x192.png", // Optional: Add a badge icon
   });
 });

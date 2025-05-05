@@ -1,26 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
-import { initializeFCM } from "../lib/fcmService";
 
 export default function Home() {
-  useEffect(() => {
-    // Call initializeFCM after 5 seconds, twice
-    const firstCall = setTimeout(() => {
-      initializeFCM();
-    }, 5000);
-
-    const secondCall = setTimeout(() => {
-      initializeFCM();
-    }, 10000); // 5 seconds after the first call
-
-    // Cleanup timeouts when the component unmounts
-    return () => {
-      clearTimeout(firstCall);
-      clearTimeout(secondCall);
-    };
-  }, []);
   return (
     <div className="bg-gray-50 flex items-center justify-center">
       <div className="max-w-4xl mx-auto text-center p-6 bg-white rounded-lg">

@@ -28,7 +28,6 @@ export default function DashboardPage() {
   const currentUserId = "681751441feda357ed8eb4d0"; // Replace with real user ID
 
   useEffect(() => {
-    console.log("isAuthenticated:", isAuthenticated);
     if (!isAuthenticated) return;
 
     async function fetchTasks() {

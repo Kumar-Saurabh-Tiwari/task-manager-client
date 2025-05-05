@@ -16,7 +16,7 @@ export const initializeFCM = async (): Promise<void> => {
 
     const fcmToken = await requestFCMToken(vapidKey);
     if (fcmToken) {
-      console.log("FCM Token:", fcmToken);
+      // console.log("FCM Token:", fcmToken);
       sessionStorage.setItem("fcmToken", fcmToken); // Store the token in session storage
     } else {
       console.warn("Failed to retrieve FCM token.");

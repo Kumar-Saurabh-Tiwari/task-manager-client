@@ -7,6 +7,7 @@ import './globals.css';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
+import { initializeFCM } from "../lib/fcmService";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -14,7 +15,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const router = useRouter();
 
   useEffect(() => {
+    // Call initializeFCM after 5 seconds, twice
+    const firstCall = setTimeout(() => {
+      initializeFCM();
+    }, 5000);
 
+    const secondCall = setTimeout(() => {
+      initializeFCM();
+    }, 10000); // 5 seconds after the first call
+
+    // Cleanup timeouts when the component unmounts
+    return () => {
+      clearTimeout(firstCall);
+      clearTimeout(secondCall);
+    };
   }, [isAuthenticated]);
 
   // Toggle sidebar visibility
@@ -45,12 +59,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         });
     }
   }, []);
-  
+
 
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/icon-192x192.png" />
+        <meta name="theme-color" content="#2563eb" />
+      </head>
       <body className="bg-gray-50 text-gray-900">
-      <Toaster position="top-right" reverseOrder={false} /> {/* Add Toaster here */}
+        <Toaster position="top-right" reverseOrder={false} /> {/* Add Toaster here */}
         <nav className="bg-white border-b px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             {/* Back Button */}
