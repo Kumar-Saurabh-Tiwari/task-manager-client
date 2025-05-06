@@ -5,6 +5,7 @@ import { format, isBefore } from "date-fns";
 import { getTasks } from "../../services/taskService";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import { scheduleNotification } from "../../services/notificationService";
 
 type Task = {
   _id: string; // Updated to match the backend response
@@ -35,6 +36,7 @@ export default function DashboardPage() {
       try {
         const data = await getTasks();
         setTasks(Array.isArray(data) ? data : []); // Ensure data is an array
+        scheduleUpcomingNotifications(Array.isArray(data) ? data : [])
       } catch (error) {
         console.error("Error fetching tasks:", error);
         setTasks([]); // Fallback to an empty array on error
@@ -44,6 +46,31 @@ export default function DashboardPage() {
     }
     fetchTasks();
   }, [isAuthenticated]);
+
+  const scheduleUpcomingNotifications = async (tasks:any) => {
+    const token = sessionStorage.getItem("fcmToken");
+  
+    console.log("FCM task:", tasks);
+    // ✅ Check if notifications already scheduled
+    const alreadyScheduled = sessionStorage.getItem("scheduleCalled");
+    if (alreadyScheduled || !token) return;
+  
+    for (const task of tasks) {
+      const scheduledTime = task.dueDate;
+  
+      console.log("Scheduling notification for task:", task.title, "at", scheduledTime);
+      await scheduleNotification({
+        title: task.title,
+        body: task.description || "You have a task due soon!",
+        token,
+        scheduledTime,
+      });
+    }
+  
+    // ✅ Set flag so it's not called again in this session
+    sessionStorage.setItem("scheduleCalled", "true");
+  };
+  
 
   const tasksAssigned = tasks.filter((t) => t.createdBy._id === currentUserId);
   const overdueTasks = tasks.filter((t) => isBefore(new Date(t.dueDate), new Date()));
@@ -89,7 +116,7 @@ export default function DashboardPage() {
   </div>
 </div>
 
-      <Section title="📝 Tasks You Created" tasks={tasksAssigned} />
+      <Section title="📝 Tasks For You" tasks={tasksAssigned} />
       <Section title="⏰ Overdue Tasks" tasks={overdueTasks} highlight="red" />
     </div>
   );

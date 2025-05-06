@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams,useRouter } from "next/navigation";
 import { createTask } from "../../services/taskService";
 import { scheduleNotification } from "../../services/notificationService";
 import { toast } from "react-hot-toast";
@@ -11,7 +11,10 @@ dayjs.extend(utc);
 
 export default function CreateTaskPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const assignId = searchParams.get("assignId"); // Safely extract `id` from query params
   const [task, setTask] = useState({
+    assignedTo:"",
     title: "",
     description: "",
     dueDate: "",
@@ -61,6 +64,9 @@ export default function CreateTaskPage() {
     const scheduledTime = dayjs(task.dueDate).utc().format("YYYY-MM-DDTHH:mm:ssZ");
 
     try {
+      if(assignId) {
+        task.assignedTo = assignId; // Assign the user ID to the task
+      }
       const res = await createTask(task);
       if (res && res._id) {
         toast.success("Task created successfully!");
