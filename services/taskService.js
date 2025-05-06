@@ -79,3 +79,11 @@ export const searchTasks = async (params) => {
   return res.json();
 };
 
+export const searchUsers = async (query) => {
+  const res = await fetch(`${API_URL}/search?query=${encodeURIComponent(query)}`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+  return res.json();
+};

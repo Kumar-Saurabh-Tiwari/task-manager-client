@@ -89,17 +89,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
 
           {/* Desktop Navigation */}
-          <div className="space-x-6 hidden md:flex">
+          <div className="flex items-center space-x-10 hidden md:flex">
             <Link href="/dashboard" className="text-gray-600 hover:text-blue-600 font-semibold transition-all duration-300">
               Dashboard
             </Link>
             {isAuthenticated ? (
-              <button
-                onClick={handleLogout}
-                className="text-gray-600 hover:text-blue-600 font-semibold transition-all duration-300"
-              >
-                Logout
-              </button>
+              <>
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-600 hover:text-blue-600 font-semibold transition-all duration-300"
+                >
+                  Logout
+                </button>
+                <Link href="/assign-task" className="block text-gray-600 hover:text-blue-600 py-2" onClick={closeSidebar}>
+                  Assign Task
+                </Link>
+              </>
             ) : (
               <>
                 <Link href="/login" className="text-gray-600 hover:text-blue-600 font-semibold transition-all duration-300">
@@ -135,12 +140,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   Dashboard
                 </Link>
                 {isAuthenticated ? (
-                  <button
-                    onClick={handleLogout}
-                    className="block text-gray-600 hover:text-blue-600 py-2"
-                  >
-                    Logout
-                  </button>
+                  <>
+                    <button
+                      onClick={handleLogout}
+                      className="block text-gray-600 hover:text-blue-600 py-2"
+                    >
+                      Logout
+                    </button>
+                    <Link href="/assign-task" className="block text-gray-600 hover:text-blue-600 py-2" onClick={closeSidebar}>
+                      Assign Task
+                    </Link>
+                  </>
+
                 ) : (
                   <>
                     <Link href="/login" className="block text-gray-600 hover:text-blue-600 py-2" onClick={closeSidebar}>

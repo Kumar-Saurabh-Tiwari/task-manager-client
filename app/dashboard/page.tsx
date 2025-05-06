@@ -58,37 +58,37 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-10">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <div className="flex items-center gap-4">
-          {/* Search Icon */}
-          <Link
-            href="/search-task"
-            className="text-gray-600 hover:text-blue-600 transition flex items-center gap-2"
-            aria-label="Search Tasks"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              className="w-5 h-5"
-            >
-              <path
-                d="M10 2a8 8 0 105.29 14.71l4 4a1 1 0 001.42-1.42l-4-4A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"
-              />
-            </svg>
-            <span className="text-sm font-medium">Search</span>
-          </Link>
+<div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+  <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
 
-          {/* Add Task Button */}
-          <Link
-            href="/create-task"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            + Add Task
-          </Link>
-        </div>
-      </div>
+  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+    {/* Search Icon */}
+    <Link
+      href="/search-task"
+      className="text-gray-600 hover:text-blue-600 transition flex items-center gap-2"
+      aria-label="Search Tasks"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+        className="w-5 h-5"
+      >
+        <path d="M10 2a8 8 0 105.29 14.71l4 4a1 1 0 001.42-1.42l-4-4A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z" />
+      </svg>
+      <span className="text-sm font-medium">Search</span>
+    </Link>
+
+    {/* Add Task Button */}
+    <Link
+      href="/create-task"
+      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
+    >
+      + Add Task
+    </Link>
+  </div>
+</div>
+
       <Section title="📝 Tasks You Created" tasks={tasksAssigned} />
       <Section title="⏰ Overdue Tasks" tasks={overdueTasks} highlight="red" />
     </div>
