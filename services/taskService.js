@@ -13,6 +13,15 @@ export const getTasks = async () => {
   return res.json();
 };
 
+export const getTaskById = async (id) => {
+  const res = await fetch(`${API_URL}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+  return res.json();
+};
+
 export const createTask = async (taskData) => {
   const res = await fetch(API_URL, {
     method: 'POST',

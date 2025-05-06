@@ -4,6 +4,11 @@ import { useRouter } from "next/navigation";
 import { createTask } from "../../services/taskService";
 import { scheduleNotification } from "../../services/notificationService";
 import { toast } from "react-hot-toast";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
+
 export default function CreateTaskPage() {
   const router = useRouter();
   const [task, setTask] = useState({
@@ -42,25 +47,28 @@ export default function CreateTaskPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    let fcmToken
-    fcmToken = sessionStorage.getItem("fcmToken"); // Retrieve the token from session storage
-    
+
     if (!validateForm()) {
-      toast.error(error); // Show error message in toaster
+      toast.error(error);
       return;
     }
 
+    if (!dayjs(task.dueDate).isValid()) {
+      toast.error("Invalid due date.");
+      return;
+    }
+
+    const scheduledTime = dayjs(task.dueDate).utc().format("YYYY-MM-DDTHH:mm:ssZ");
+
     try {
       const res = await createTask(task);
-      if (res && res._id) { // Check if the response contains the created task's ID
-        toast.success("Task created successfully!"); // Show success message
-        console.log("Task created:", fcmToken); // Log the created task
-        // Schedule a notification
+      if (res && res._id) {
+        toast.success("Task created successfully!");
         const notificationRes = await scheduleNotification({
           title: task.title,
           body: task.description || "You have a task due soon!",
-          token: fcmToken, // Replace with the actual token if required
-          scheduledTime: task.dueDate, // Use the due date as the scheduled time
+          token: sessionStorage.getItem("fcmToken"),
+          scheduledTime,
         });
 
         if (notificationRes.success) {
@@ -69,15 +77,15 @@ export default function CreateTaskPage() {
           toast.error("Failed to schedule notification.");
         }
 
-        router.push("/dashboard"); // Redirect to the dashboard after successful creation
+        router.push("/dashboard");
       } else {
         setError("Failed to create the task. Please try again.");
-        toast.error("Failed to create the task. Please try again."); // Show error message
+        toast.error("Failed to create the task. Please try again.");
       }
     } catch (err) {
       console.error("Error creating task:", err);
       setError("An error occurred while creating the task.");
-      toast.error("An error occurred while creating the task."); // Show error message
+      toast.error("An error occurred while creating the task.");
     }
   };
 
@@ -116,7 +124,7 @@ export default function CreateTaskPage() {
             Due Date & Time
           </label>
           <input
-            type="datetime-local" // Changed to datetime-local
+            type="datetime-local"
             id="dueDate"
             name="dueDate"
             className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"

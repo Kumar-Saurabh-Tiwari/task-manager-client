@@ -86,7 +86,7 @@ function Section({ title, tasks, highlight }: { title: string; tasks: Task[]; hi
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {tasks.map((task) => (
             <div
-              key={task._id} // Updated to use _id
+              key={task._id}
               className="p-5 bg-white rounded-xl shadow-sm border hover:shadow-md transition"
             >
               <h3 className="font-semibold text-lg mb-1">{task.title}</h3>
@@ -96,9 +96,17 @@ function Section({ title, tasks, highlight }: { title: string; tasks: Task[]; hi
               <p className="text-sm text-gray-600 mb-2">
                 Created By: {task.createdBy.name} ({task.createdBy.email})
               </p>
-              <div className="flex gap-2 text-sm">
+              <div className="flex gap-2 text-sm mb-4">
                 <Badge color={getPriorityColor(task.priority)}>{task.priority}</Badge>
                 <Badge color={getStatusColor(task.status)}>{task.status}</Badge>
+              </div>
+              <div className="flex justify-between">
+                <Link
+                  href={`/edit-task?id=${task._id}`}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                >
+                  Edit Task
+                </Link>
               </div>
             </div>
           ))}
