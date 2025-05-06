@@ -67,3 +67,15 @@ export const assignTask = async (id, userId) => {
   });
   return res.json();
 };
+
+// services/taskService.ts
+export const searchTasks = async (params) => {
+  const query = new URLSearchParams(params).toString();
+  const res = await fetch(`${API_URL}/search?${query}`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+  return res.json();
+};
+
