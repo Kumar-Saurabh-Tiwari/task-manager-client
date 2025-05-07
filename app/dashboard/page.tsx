@@ -128,16 +128,22 @@ export default function DashboardPage() {
   };
 
 
-  const tasksAssigned = tasks.filter((t: any) => {
-    const createdById = t.createdBy?._id || t.createdBy;
-    const assignedToId = t.assignedTo?._id || t.assignedTo;
+  const tasksAssigned = tasks
+    .filter((t: any) => {
+      const createdById = t.createdBy?._id || t.createdBy;
+      const assignedToId = t.assignedTo?._id || t.assignedTo;
 
-    const isOwner = createdById === currentUserId || assignedToId === currentUserId;
-    const isUpcoming = new Date(t.dueDate) > new Date();
+      const isOwner = createdById === currentUserId || assignedToId === currentUserId;
+      const isUpcoming = new Date(t.dueDate) > new Date();
 
-    return isOwner && isUpcoming;
-  });
-  const overdueTasks = tasks.filter((t) => isBefore(new Date(t.dueDate), new Date()));
+      return isOwner && isUpcoming;
+    })
+    .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  const overdueTasks = tasks
+    .filter((t: any) => new Date(t.dueDate) < new Date())
+    .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
 
   if (loading) {
     return (
