@@ -5,6 +5,7 @@ import { format, isBefore } from "date-fns";
 import { getTasks } from "../../services/taskService";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import { toast } from "react-hot-toast";
 import { scheduleNotification } from "../../services/notificationService";
 import socket from '../../lib/socket'; // Adjust the import path as necessary
 import { jwtDecode } from "jwt-decode";
@@ -82,13 +83,21 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!isAuthenticated) return;
-
+  
     async function fetchTasks() {
+      if (!navigator.onLine) {
+        setTasks([]);               // Clear any previous tasks
+        setLoading(false);          // Hide spinner
+        toast.error("You are in offline mode. Tasks cannot be fetched."); // Show toast
+        return;
+      }
+  
       setLoading(true);
       try {
         const data = await getTasks();
-        setTasks(Array.isArray(data) ? data : []); // Ensure data is an array
-        scheduleUpcomingNotifications(Array.isArray(data) ? data : [])
+        const taskList = Array.isArray(data) ? data : [];
+        setTasks(taskList);
+        scheduleUpcomingNotifications(taskList);
       } catch (error) {
         console.error("Error fetching tasks:", error);
         setTasks([]); // Fallback to an empty array on error
@@ -96,8 +105,10 @@ export default function DashboardPage() {
         setLoading(false); // Hide spinner
       }
     }
+  
     fetchTasks();
   }, [isAuthenticated, currentUserId]);
+  
 
   const scheduleUpcomingNotifications = async (tasks: any) => {
     const token = sessionStorage.getItem("fcmToken");
