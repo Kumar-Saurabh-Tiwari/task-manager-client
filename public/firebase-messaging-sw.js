@@ -1,3 +1,5 @@
+
+// firebase-messaging-sw.js
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
@@ -12,14 +14,3 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
-
-messaging.onBackgroundMessage(function (payload) {
-  console.log("[firebase-messaging-sw.js] Received background message: ", payload);
-  const { title, body } = payload.notification;
-
-  self.registration.showNotification(title, {
-    body,
-    icon: "/icon-192x192.png", // Ensure this path is correct
-    badge: "/icon-192x192.png", // Optional: Add a badge icon
-  });
-});

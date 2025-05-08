@@ -2,44 +2,55 @@
 
 This is a **Task Manager App** built with [Next.js](https://nextjs.org). It allows users to create, manage, and track tasks with features like priority levels, statuses, and due dates. The app is designed to be user-friendly and efficient for task management.
 
-## Features
+---
+
+## 🚀 Features
 
 - Create, update, and delete tasks.
 - Assign priority levels (`low`, `medium`, `high`) to tasks.
 - Track task statuses (`todo`, `in-progress`, `done`).
-- View overdue tasks.
-- User authentication for secure access.
+- View upcoming and overdue tasks.
+- Real-time updates via Socket.IO.
+- Push notifications using Firebase Cloud Messaging.
+- User authentication with JWT.
 - Responsive design for desktop and mobile devices.
 
-## Getting Started
+---
 
-Follow these steps to set up and run the project locally:
+## ⚙️ Getting Started
 
 ### Prerequisites
-
-Ensure you have the following installed on your system:
 
 - [Node.js](https://nodejs.org/) (v16 or higher recommended)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
 ### Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Kumar-Saurabh-Tiwari/task-manager-client.git
-   cd task-manager-client
-   ```
+```bash
+git clone https://github.com/Kumar-Saurabh-Tiwari/task-manager-client.git
+cd task-manager-client
+npm install
+# or
+yarn install
+```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
+### Environment Variables
 
-### Running the Development Server
+Create a `.env.local` file in the root directory:
 
-Start the development server:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-auth-domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+NEXT_PUBLIC_FIREBASE_VAPID_KEY=your-vapid-key
+```
+
+Ensure Firebase credentials are correct and `firebase-messaging-sw.js` is placed inside the `public/` directory.
+
+### Run Development Server
 
 ```bash
 npm run dev
@@ -47,38 +58,60 @@ npm run dev
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the app.
+Visit [http://localhost:3000](http://localhost:3000) to view the app.
 
-### Steps to Create a Task
+---
 
-1. Log in to your account or register if you are a new user.
-2. Navigate to the **Dashboard**.
-3. Click the **+ Add Task** button.
-4. Fill in the task details:
-   - **Title**: Enter a descriptive title for the task.
-   - **Description**: Optionally, provide additional details about the task.
-   - **Due Date**: Select a due date for the task.
-   - **Priority**: Choose a priority level (`low`, `medium`, `high`).
-   - **Status**: Set the initial status (`todo`, `in-progress`, `done`).
-5. Click **Create Task** to save the task.
+## 🧠 Approach Explanation
 
-Your task will now appear in the task list on the dashboard.
+This project is designed as a scalable full-stack app with a clean separation between frontend (Next.js) and backend (Express.js).
 
-## Learn More
+- Uses REST API to manage tasks and authentication.
+- Push notifications are scheduled via backend and sent with Firebase Cloud Messaging.
+- Real-time task updates are implemented via Socket.IO.
+- State and UI updates handled with React Hooks.
+- Form submission is guarded against duplicates using a disabled button state.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🤔 Assumptions & Trade-offs
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- JWTs are stored in `localStorage`, which is simple but less secure than using `httpOnly` cookies.
+- Notifications only work if users grant browser permission.
+- Basic role-based access is implemented via creator and assignee only; no advanced RBAC.
+- Tasks are filtered and sorted by due date and `createdAt` using `dayjs`.
+- Duplicate notifications prevented by avoiding redundant `showNotification` calls.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📋 Steps to Create a Task
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Log in or register.
+2. Navigate to **Dashboard**.
+3. Click **+ Add Task**.
+4. Fill in:
+   - **Title**, **Description**, **Due Date**, **Priority**, **Status**
+5. Click **Create Task**.
+6. Form resets and button disables after submission to avoid duplicates.
 
-## License
+---
+
+## 📚 Learn More
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Learn Next.js](https://nextjs.org/learn)
+- [Next.js GitHub Repo](https://github.com/vercel/next.js)
+
+---
+
+## 🚀 Deploy on Vercel
+
+Easily deploy with [Vercel](https://vercel.com/new) — creators of Next.js.
+
+- Guide: [Deploying Next.js Apps](https://nextjs.org/docs/app/building-your-application/deploying)
+
+---
+
+## 📄 License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.

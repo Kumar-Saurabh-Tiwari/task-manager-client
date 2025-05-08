@@ -4,16 +4,23 @@ import { login } from '../../services/authService';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from "react-hot-toast";
-import { useEffect} from "react";
+import { useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false); // Loading state
-
+  const { isAuthenticated } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated]);
 
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -26,7 +33,7 @@ export default function LoginPage() {
       setLoading(true);
       const res = await login(form);
       if (res.token) {
-        toast.success("Login successful!"); 
+        toast.success("Login successful!");
         localStorage.setItem('token', res.token);
         router.push('/dashboard');
         setLoading(false);

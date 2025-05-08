@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useSearchParams,useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { createTask } from "../../services/taskService";
 import { scheduleNotification } from "../../services/notificationService";
 import { toast } from "react-hot-toast";
@@ -29,6 +29,7 @@ const initialTask: Task = {
 export default function CreateTaskPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
   const assignId = searchParams.get("assignId"); // Safely extract `id` from query params
   const [task, setTask] = useState<Task>(initialTask);
   const [error, setError] = useState("");
@@ -60,27 +61,33 @@ export default function CreateTaskPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true); // Disable button
 
     if (!validateForm()) {
       toast.error(error);
+      setLoading(false);
       return;
     }
 
     if (!dayjs(task.dueDate).isValid()) {
       toast.error("Invalid due date.");
+      setLoading(false);
       return;
     }
 
     const scheduledTime = dayjs(task.dueDate).utc().format("YYYY-MM-DDTHH:mm:ssZ");
 
     try {
-      console.log(assignId, "assignId");
       if (assignId) {
-        task.assignedTo = assignId; // Assign the ID to the task
+        task.assignedTo = assignId;
       }
+
       const res = await createTask(task);
+
       if (res && res._id) {
         toast.success("Task created successfully!");
+        setTask(initialTask); // ✅ Reset form
+
         const notificationRes = await scheduleNotification({
           title: task.title,
           body: task.description || "You have a task due soon!",
@@ -97,14 +104,17 @@ export default function CreateTaskPage() {
         router.push("/dashboard");
       } else {
         setError("Failed to create the task. Please try again.");
-        toast.error("Failed to create the task. Please try again.");
+        toast.error("Failed to create the task.");
       }
     } catch (err) {
       console.error("Error creating task:", err);
       setError("An error occurred while creating the task.");
       toast.error("An error occurred while creating the task.");
+    } finally {
+      setLoading(false); // Re-enable button
     }
   };
+
 
   return (
     <div className="max-w-xl mx-auto mt-6 bg-white p-6 rounded-lg shadow-md">
@@ -183,10 +193,13 @@ export default function CreateTaskPage() {
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-300"
+          disabled={loading}
+          className={`w-full py-2 rounded transition duration-300 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'
+            }`}
         >
-          Create Task
+          {loading ? "Creating..." : "Create Task"}
         </button>
+
       </form>
     </div>
   );
