@@ -29,7 +29,7 @@ type Task = {
 
 export default function DashboardPage() {
   const { isAuthenticated } = useAuth();
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(false); // Loading state
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]); // Ensure tasks is initialized as an empty array
 
@@ -55,8 +55,13 @@ export default function DashboardPage() {
       sessionStorage.removeItem('scheduleCalled');
       if (task.assignedTo === currentUserId) {
         console.log('Task assigned to current user:', task);
-        setLoading(true);
         try {
+          if (!navigator.onLine) {
+            setTasks([]);               // Clear any previous tasks
+            setLoading(false);          // Hide spinner
+            return;
+          }
+          setLoading(true);
           const data = await getTasks();
           setTasks(Array.isArray(data) ? data : []); // Ensure data is an array
           scheduleUpcomingNotifications(Array.isArray(data) ? data : [])

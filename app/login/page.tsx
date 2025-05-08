@@ -37,6 +37,9 @@ export default function LoginPage() {
         localStorage.setItem('token', res.token);
         localStorage.setItem('userEmail', form.email);
         router.push('/dashboard');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
         setLoading(false);
       } else {
         setError(res.message || 'Login failed');

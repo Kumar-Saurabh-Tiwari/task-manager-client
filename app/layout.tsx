@@ -43,9 +43,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   // Logout function
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove token from localStorage
-    router.replace("/login"); // Redirect to login page
+    localStorage.removeItem("token");      // Remove token from localStorage
+    localStorage.removeItem("userEmail");  // Remove userEmail
+    router.replace("/login");              // Redirect to login page
+    window.location.reload();              // Reload the page
   };
+  
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -65,7 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     const email = localStorage.getItem("userEmail");
     if (email) setUserEmail(email);
-  }, []);
+  }, [isAuthenticated]);
 
   return (
     <html lang="en">
