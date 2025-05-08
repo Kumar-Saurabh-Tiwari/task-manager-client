@@ -1,6 +1,6 @@
 # Task Manager App
 
-This is a **Task Manager App** built with [Next.js](https://nextjs.org). It allows users to create, manage, and track tasks with features like priority levels, statuses, and due dates. The app is designed to be user-friendly and efficient for task management.
+This is a **Progressive Web App (PWA)** built with [Next.js](https://nextjs.org) for managing tasks efficiently. It allows users to create, update, and track tasks with features like priority levels, statuses, and due dates. The app leverages **Service Workers** for offline support and background push notifications, making it highly responsive and mobile-friendly.
 
 ---
 
@@ -11,11 +11,9 @@ This is a **Task Manager App** built with [Next.js](https://nextjs.org). It allo
 - Track task statuses (`todo`, `in-progress`, `done`).
 - View upcoming and overdue tasks.
 - Real-time updates via Socket.IO.
-- Push notifications using Firebase Cloud Messaging.
+- Push notifications using Firebase Cloud Messaging and Service Workers.
 - User authentication with JWT.
 - Responsive design for desktop and mobile devices.
-
----
 
 ## ⚙️ Getting Started
 
