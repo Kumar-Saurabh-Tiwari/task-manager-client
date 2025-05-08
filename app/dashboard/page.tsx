@@ -51,6 +51,7 @@ export default function DashboardPage() {
 
     socket.on('receive-task-update', async (task) => {
       console.log('🔔 New task received via socket:', task);
+      sessionStorage.removeItem('scheduleCalled');
       if (task.assignedTo === currentUserId) {
         console.log('Task assigned to current user:', task);
         setLoading(true);
