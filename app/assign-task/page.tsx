@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState ,useEffect} from 'react';
 import { searchUsers } from '../../services/userService'; // adjust the path
 import { toast } from "react-hot-toast";
 import Link from 'next/link';
@@ -22,6 +22,10 @@ export default function AssignTaskPage() {
             setLoading(false);
         }
     }, [query]);
+
+      useEffect(() => {
+        handleSearch();
+      }, [handleSearch]);
 
     return (
         <div className="max-w-2xl mx-auto p-4">
