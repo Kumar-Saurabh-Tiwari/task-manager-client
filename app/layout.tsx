@@ -60,6 +60,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }
   }, []);
 
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const email = localStorage.getItem("userEmail");
+    if (email) setUserEmail(email);
+  }, []);
 
   return (
     <html lang="en">
@@ -74,18 +80,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex items-center space-x-4">
             {/* Back Button */}
             <button
-              onClick={() => router.back()} // Navigate to the previous page
+              onClick={() => router.back()}
               className="flex items-center text-blue-600 hover:text-blue-800 transition-all duration-300"
             >
               <img
                 src="https://icons.veryicon.com/png/o/miscellaneous/arrows/go-back-2.png"
                 alt="Back"
-                className="w-6 h-6 mr-2" // Adjusted size and spacing
+                className="w-6 h-6 mr-2"
               />
             </button>
-            <Link href="/" className="text-2xl font-bold text-blue-600 hover:text-blue-800 transition-all duration-300">
+
+            <Link href="/" className="text-xl font-bold text-blue-600 hover:text-blue-800 transition-all duration-300">
               TaskManager
             </Link>
+
+            {/* User Info */}
+            {userEmail && (
+              <div className="hidden sm:flex items-center space-x-2 ml-auto">
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                  alt="User Icon"
+                  className="w-6 h-6"
+                />
+                <span className="text-sm text-gray-700">{userEmail}</span>
+              </div>
+            )}
           </div>
 
           {/* Desktop Navigation */}
@@ -150,6 +169,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <Link href="/assign-task" className="block text-gray-600 hover:text-blue-600 py-2" onClick={closeSidebar}>
                       Assign Task
                     </Link>
+
+                    {/* Show email on mobile */}
+                    {userEmail && (
+                      <div className="flex items-center space-x-2 py-2 text-gray-700">
+                        <img
+                          src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                          alt="User Icon"
+                          className="w-5 h-5"
+                        />
+                        <span className="text-sm">{userEmail}</span>
+                      </div>
+                    )}
                   </>
 
                 ) : (

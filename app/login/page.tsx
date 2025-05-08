@@ -35,6 +35,7 @@ export default function LoginPage() {
       if (res.token) {
         toast.success("Login successful!");
         localStorage.setItem('token', res.token);
+        localStorage.setItem('userEmail', form.email);
         router.push('/dashboard');
         setLoading(false);
       } else {
